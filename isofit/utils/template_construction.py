@@ -686,7 +686,7 @@ def build_config(
     retrieve_co2: bool = False,
     presolve: bool = False,
     terrain_style: str = "flat",
-    cos_i_min: float = 0.3,
+    cos_i_min: float = 0.5, # 0.3
 ) -> None:
     """Write an isofit config file for the main solve, using the specified pathnames and all given info
 

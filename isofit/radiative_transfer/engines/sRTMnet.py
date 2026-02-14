@@ -242,7 +242,9 @@ class SRTMnetModel(torch.nn.Module):
                 if response_offset is not None:
                     out += response_offset[_key]
                 out += surrogate_data_emulator_wl[_key][batch_slice]
-
+                out = np.minimum(out, 1)
+                out = np.maximum(out,0)
+                
                 # Resample the direct product, converting to radiance for rhoatm
                 if key != "3c":
                     outdict[key].append(
