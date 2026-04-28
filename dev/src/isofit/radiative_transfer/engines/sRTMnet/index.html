@@ -17,7 +17,7 @@
       
       
       <link rel="icon" href="../../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -5339,7 +5339,9 @@
 <span class="normal">646</span>
 <span class="normal">647</span>
 <span class="normal">648</span>
-<span class="normal">649</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">#</span>
+<span class="normal">649</span>
+<span class="normal">650</span>
+<span class="normal">651</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">#</span>
 <span class="c1">#  Copyright 2019 California Institute of Technology</span>
 <span class="c1">#</span>
 <span class="c1">#  Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
@@ -5583,6 +5585,8 @@
                 <span class="k">if</span> <span class="n">response_offset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">out</span> <span class="o">+=</span> <span class="n">response_offset</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span>
                 <span class="n">out</span> <span class="o">+=</span> <span class="n">surrogate_data_emulator_wl</span><span class="p">[</span><span class="n">_key</span><span class="p">][</span><span class="n">batch_slice</span><span class="p">]</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
 
                 <span class="c1"># Resample the direct product, converting to radiance for rhoatm</span>
                 <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;3c&quot;</span><span class="p">:</span>

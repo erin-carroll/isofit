@@ -17,7 +17,7 @@
       
       
       <link rel="icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -5344,7 +5344,29 @@
 <span class="normal">580</span>
 <span class="normal">581</span>
 <span class="normal">582</span>
-<span class="normal">583</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="ch">#! /usr/bin/env python3</span>
+<span class="normal">583</span>
+<span class="normal">584</span>
+<span class="normal">585</span>
+<span class="normal">586</span>
+<span class="normal">587</span>
+<span class="normal">588</span>
+<span class="normal">589</span>
+<span class="normal">590</span>
+<span class="normal">591</span>
+<span class="normal">592</span>
+<span class="normal">593</span>
+<span class="normal">594</span>
+<span class="normal">595</span>
+<span class="normal">596</span>
+<span class="normal">597</span>
+<span class="normal">598</span>
+<span class="normal">599</span>
+<span class="normal">600</span>
+<span class="normal">601</span>
+<span class="normal">602</span>
+<span class="normal">603</span>
+<span class="normal">604</span>
+<span class="normal">605</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="ch">#! /usr/bin/env python3</span>
 <span class="c1">#</span>
 <span class="c1">#  Copyright 2018 California Institute of Technology</span>
 <span class="c1">#</span>
@@ -5698,22 +5720,44 @@
         <span class="c1"># for now, this is always set to 1.0.</span>
         <span class="n">b</span> <span class="o">=</span> <span class="mf">1.0</span>
 
+        <span class="c1"># # Assigning coupled terms, unscaling and rescaling downward direct radiance by local solar zenith angle.</span>
+        <span class="c1"># # Downward diffuse components are scaled by viewable sky fraction (i.e., &quot;ungula&quot; of viewable sky in solid geometry terms).</span>
+        <span class="c1"># L_dir_dir = L_coupled[0] / coszen * cos_i * b</span>
+        <span class="c1"># L_dif_dir = L_coupled[1]</span>
+        <span class="c1"># L_dir_dif = L_coupled[2] / coszen * cos_i * b</span>
+        <span class="c1"># L_dif_dif = L_coupled[3]</span>
+
+        <span class="c1"># # Note - we should really be doing the multiplication upstream before convolution - this is an approximation</span>
+        <span class="c1"># # Correct downward diffuse term for topographic assuming Hay&#39;s model (Hay 1979; Richter 1998; Guanter et al., 2009)</span>
+        <span class="c1"># t_down_dir = r[&quot;transm_down_dir&quot;]</span>
+        <span class="c1"># hays_model = (b * t_down_dir * (cos_i / coszen)) + (</span>
+        <span class="c1">#     (1 - b * t_down_dir) * skyview_factor</span>
+        <span class="c1"># )</span>
+        <span class="c1"># # applies to the downward diffuse terms</span>
+        <span class="c1"># L_dif_dir *= hays_model</span>
+        <span class="c1"># L_dif_dif *= hays_model</span>
+
+        <span class="c1"># Brent patch</span>
+        <span class="c1"># Assumption of the topography of the background</span>
+        <span class="n">cos_i_bg</span> <span class="o">=</span> <span class="n">coszen</span>
+        <span class="n">skyview_factor_bg</span> <span class="o">=</span> <span class="mf">1.0</span>
+
         <span class="c1"># Assigning coupled terms, unscaling and rescaling downward direct radiance by local solar zenith angle.</span>
         <span class="c1"># Downward diffuse components are scaled by viewable sky fraction (i.e., &quot;ungula&quot; of viewable sky in solid geometry terms).</span>
         <span class="n">L_dir_dir</span> <span class="o">=</span> <span class="n">L_coupled</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">coszen</span> <span class="o">*</span> <span class="n">cos_i</span> <span class="o">*</span> <span class="n">b</span>
         <span class="n">L_dif_dir</span> <span class="o">=</span> <span class="n">L_coupled</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">L_dir_dif</span> <span class="o">=</span> <span class="n">L_coupled</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">coszen</span> <span class="o">*</span> <span class="n">cos_i</span> <span class="o">*</span> <span class="n">b</span>
+        <span class="n">L_dir_dif</span> <span class="o">=</span> <span class="n">L_coupled</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">coszen</span> <span class="o">*</span> <span class="n">cos_i_bg</span>
         <span class="n">L_dif_dif</span> <span class="o">=</span> <span class="n">L_coupled</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
 
         <span class="c1"># Note - we should really be doing the multiplication upstream before convolution - this is an approximation</span>
         <span class="c1"># Correct downward diffuse term for topographic assuming Hay&#39;s model (Hay 1979; Richter 1998; Guanter et al., 2009)</span>
         <span class="n">t_down_dir</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;transm_down_dir&quot;</span><span class="p">]</span>
-        <span class="n">hays_model</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span> <span class="o">*</span> <span class="n">t_down_dir</span> <span class="o">*</span> <span class="p">(</span><span class="n">cos_i</span> <span class="o">/</span> <span class="n">coszen</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span>
+        <span class="n">L_dif_dir</span> <span class="o">*=</span> <span class="p">(</span><span class="n">b</span> <span class="o">*</span> <span class="n">t_down_dir</span> <span class="o">*</span> <span class="p">(</span><span class="n">cos_i</span> <span class="o">/</span> <span class="n">coszen</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span>
             <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">b</span> <span class="o">*</span> <span class="n">t_down_dir</span><span class="p">)</span> <span class="o">*</span> <span class="n">skyview_factor</span>
         <span class="p">)</span>
-        <span class="c1"># applies to the downward diffuse terms</span>
-        <span class="n">L_dif_dir</span> <span class="o">*=</span> <span class="n">hays_model</span>
-        <span class="n">L_dif_dif</span> <span class="o">*=</span> <span class="n">hays_model</span>
+        <span class="n">L_dif_dif</span> <span class="o">*=</span> <span class="p">(</span><span class="n">t_down_dir</span> <span class="o">*</span> <span class="p">(</span><span class="n">cos_i_bg</span> <span class="o">/</span> <span class="n">coszen</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span>
+            <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">t_down_dir</span><span class="p">)</span> <span class="o">*</span> <span class="n">skyview_factor_bg</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">L_dir_dir</span><span class="p">,</span> <span class="n">L_dif_dir</span><span class="p">,</span> <span class="n">L_dir_dif</span><span class="p">,</span> <span class="n">L_dif_dif</span>
 
